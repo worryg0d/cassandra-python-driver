@@ -975,29 +975,17 @@ class Cluster(object):
 
     extra_startup_options: dict[str, str] | None = None
     """
-    A dict[str, str] of extra options sent in the STARTUP message when a connection is established.
+    A dict of extra options sent in the STARTUP message when a connection is established.
 
-    It is useful when you need to send custom options to the server that are not supported 
-    by the driver for observability purposes.
+    This is useful for sending custom startup options that are not supported by the driver.
+    For example, per `CASSANDRA-16378 <https://issues.apache.org/jira/browse/CASSANDRA-16378>`_,
+    custom application level options are exposed in client metrics::
 
-    Example::
-        Cluster(extra_startup_options={'X_APPLICATION_NAME': 'my-app'})
+        Cluster(extra_startup_options={'APPLICATION_NAME': 'my-app'})
 
-    Important to not put any sensitive data here, as it will be visible in system_views.clients 
-    virtual table or in output of nodetool clientstats --client-options command.
-    See `CASSANDRA-16378 <https://issues.apache.org/jira/browse/CASSANDRA-16378>` for details.
-
-    A good practice is to prefix your custom options so that they do not collide with 
-    the driver behavior control options. The following options control the driver behavior:
-    - ``CQL_VERSION``
-    - ``COMPRESSION``
-    - ``NO_COMPACT``
-    - ``DRIVER_NAME``
-    - ``DRIVER_VERSION``
-
-    Options that collide with these are ignored.
-
-    Keys and values must be valid UTF-8 strings.
+    Options managed by the driver, such as ``CQL_VERSION``, ``COMPRESSION``, ``NO_COMPACT``,
+    ``DRIVER_NAME`` and ``DRIVER_VERSION``, always take precedence. Extra options that collide
+    with them are ignored.
     """
 
     @property
